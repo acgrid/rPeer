@@ -87,6 +87,7 @@ interface ConfigurationProvider
 	 * Elementary configuration items almost for every application
 	 */
 	const CONFIG_LOG_FILE = 'log_file';
+	const CONFIG_NUMWANT_LIMIT = 'numwant_limit';
 	const CONFIG_MAIN_DB_HOST = '';
 	const CONFIG_MAIN_DB_PORT = '';
 	const CONFIG_MAIN_DB_USER = '';

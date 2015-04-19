@@ -52,6 +52,14 @@ class Facade
 		if(self::$instance === NULL) throw new NotInitializedException();
 		return self::$instance;
 	}
+	/**
+	 * @throws NotInitializedException
+	 * @return ConfigurationProvider
+	 */
+	public static function getConfiguration()
+	{
+		
+	}
 	public static function getNativePeerReader()
 	{
 		
