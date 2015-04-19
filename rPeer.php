@@ -13,18 +13,21 @@
 
 namespace rPeer;
 
-/**
- * The library portal is a loader to determine a typical or custom components scheme
- * Choose a typical routine to bypass the autoload especially for the massive announce and scrape access
- * Or just go straight, such as performing highly-personal queries, for maximum flexible utilizing SPL autoload
- */
+define('ABSPATH', dirname(__FILE__));
+set_include_path(get_include_path() . PATH_SEPARATOR . ABSPATH);
 
-class Facade
-{
-	
-}
-
-/**
- * 
+/*
+ * Loaded common files
  */
- 
+require 'Exceptions.php';
+require 'Abstracts.php';
+require 'Utility.php';
+require 'Facade.php';
+
+/*
+ * HOWTO USE THEN
+ * (1) Call proper Facade::initTypical_Vendor or Facade::initAutoload, which differ by the loading strategies
+ * (2) Call Facade::getXXX for pre-created or pre-rontine objects or just new instances if autoloading is used
+ * (3) I'm the announce: Create custom chain fot the PrivatePeer creation following NativePeer instance, finally insert/update qualified peer and echo the peer list 
+ * 	   I'm peer querier: Make use of PeerDatabaseProvider and its wrappers to obtain data you need
+ */

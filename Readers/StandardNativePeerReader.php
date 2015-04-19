@@ -1,6 +1,6 @@
 <?php
 
-namespace Readers;
+namespace rPeer\Readers;
 use rPeer\NativePeerReader;
 use rPeer\RequiredParamException;
 

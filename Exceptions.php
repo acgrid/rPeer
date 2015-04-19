@@ -8,6 +8,10 @@ use \Exception;
  * 
  */
 
+class NotInitializedException extends Exception {}
+
+class HeaderSentException extends Exception {}
+
 class RequiredParamException extends Exception
 {
 	public $collection;
@@ -70,7 +74,20 @@ class NegativeValueException extends Exception
 	{
 		$this->param = $param;
 		$this->value = $value;
-		parent::__construct(sprintf('Paramemter %s expects to be positive, but %d passed.', $param, $value));
+ 		parent::__construct(sprintf('Value %s expects to not be negative, but %d passed.', $param, $value));
+	}
+}
+
+class EntityIDException extends Exception
+{
+	public $param;
+	public $value;
+
+	public function __construct($param, $value)
+	{
+		$this->param = $param;
+		$this->value = $value;
+		parent::__construct(sprintf('Indentifer %s expects to not be positive, but %d passed.', $param, $value));
 	}
 }
 
@@ -96,4 +113,6 @@ class BlacklistedPortException extends Exception
 		$this->port = $port;
 		parent::__construct(sprintf('Port number %u is listed in blacklist.', $port));
 	}
-} 
+}
+
+class ConfigurationException extends Exception {}

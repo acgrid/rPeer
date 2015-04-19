@@ -1,12 +1,19 @@
 <?php
-
+/**
+ * 
+ * @author acgrid
+ */
 namespace rPeer;
-use rPeer\Entities\NativePeer;
+//use rPeer\Entities\NativePeer;
 use rPeer\Entities\PrivatePeer;
 /**
  * Interface protocols
  */
 
+/**
+ * Provide extra validation or protection on certain type of data
+ *
+ */
 interface DataFilter
 {
 	public function filter($data);
@@ -39,24 +46,96 @@ interface NativePeerReader
 	public function readKey(array &$get, array &$server);
 	public function readTrackerID(array &$get, array &$server);
 }
-
-interface PrivatePeerChain
+/**
+ * Chains of responsibility conerned on PrivatePeer processing
+ * Typically two phases to go:
+ * Construction/Resume of PrivatePeer with many checking and validation
+ * Additional checks before persistentation processing
+ *
+ */
+interface PrivatePeerReaderChain
 {
-	public function setNext(PrivatePeerChain $handler);
-	public function handle();
+	public function setNext(PrivatePeerReaderChain $handler);
+	public function handle(PrivatePeer $peer);
 }
 
-interface PrivatePeerReader
+interface Logger
 {
-	public function authenicate(NativePeer $peer); // User ID
-	public function checkClient(NativePeer $peer); // NULL
-	public function lookup(NativePeer $peer); // Torrent ID
-	public function select(NativePeer $peer); // *_ts last_* initial_* connectable_* exchangable OR undefined for the first report
-	public function checkCheat(NativePeer $peer); 	
-	public function checkLimit(NativePeer $peer); 	
-	public function checkWait(NativePeer $peer); 	
-	public function checkSlot(NativePeer $peer); 	
-	public function checkIPv4(NativePeer $peer); // First Only: check connectable_ipv4
-	public function checkIPv6(NativePeer $peer); // First Only: check connectable_ipv6
-	public function setExchangable(PrivatePeer $peer); // First Only: determine exchangable
+	const LEVEL_DUMP = 1;
+	const LEVEL_DEBUG = 2;
+	const LEVEL_NOTICE = 4;
+	const LEVEL_WARNING = 8;
+	const LEVEL_ERROR = 16;
+	const LEVEL_CRITICAL = 32;
+	public function dump(array $get, array $server);
+	public function debug($line);
+	public function notice($line);
+	public function warning($line);
+	public function error($line);
+	public function critical($line);
+}
+
+interface ErrorHandler
+{
+	public function halt($message);
+	public function exception(\Exception $e);
+}
+
+interface ConfigurationProvider
+{
+	/**
+	 * Elementary configuration items almost for every application
+	 */
+	const CONFIG_LOG_FILE = 'log_file';
+	const CONFIG_MAIN_DB_HOST = '';
+	const CONFIG_MAIN_DB_PORT = '';
+	const CONFIG_MAIN_DB_USER = '';
+	const CONFIG_MAIN_DB_PASS = '';
+	const CONFIG_MAIN_DB_NAME = '';
+	
+	public function get($key, $default = NULL);
+	public function set($key, $value);
+}
+
+interface SessionRegisteryProvider
+{
+	public function has($key);
+	public function get($key);
+	public function set($key, $value);
+	public function del($key); 
+}
+
+interface PersistentRegisteryProvider
+{
+	public function store($key, $value, $expire = 0);
+	public function fetch($key);
+	public function clear($key);
+}
+
+/**
+ * Elementary interface for database-independent peer database interactions 
+ * Note that joined and extended queries need more complicated operations which provided by special classes
+ */
+interface PeerDatabaseProvider
+{
+	/**
+	 * Return the native connection handle for raw API access
+	 */
+	public function getNativeConnection();
+	
+	public function getPeerList($torrentid, $pex = true);
+	
+	public function getPeerByID($id);
+	
+	public function getPeerByRaw($peerid, $infohash);
+	
+	public function getUserPeers($userid, $torrentid = 0, $seeding = true, $leeching = true);
+	
+	public function getTorrentPeers($torrentid, $seeding = true, $leeching = true);
+	
+	public function getSeedersCount($torrentid);
+	
+	public function getLeechersCount($torrentid);
+	
+	public function persist(PrivatePeer $peer);
 }

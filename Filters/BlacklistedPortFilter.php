@@ -1,6 +1,6 @@
 <?php
 
-namespace Filters;
+namespace rPeer\Filters;
 
 use rPeer\DataFilter;
 use rPeer\BlacklistedPortException;
