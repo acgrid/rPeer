@@ -1,11 +1,13 @@
 <?php
 
-namespace rPeer\Logger;
+namespace rPeer\Loggers;
 
 use rPeer\Logger;
 
 class FileLogger implements Logger
 {
+	const CONFIG_LOG_FILE = 'log_file';
+	
 	protected $level;
 	protected $_handle;
 	public function __construct($file, $level = null)

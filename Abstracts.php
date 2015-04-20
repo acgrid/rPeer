@@ -59,6 +59,10 @@ interface PrivatePeerReaderChain
 	public function handle(PrivatePeer $peer);
 }
 
+/**
+ * Logger Service for tracker
+ *
+ */
 interface Logger
 {
 	const LEVEL_DUMP = 1;
@@ -75,30 +79,28 @@ interface Logger
 	public function critical($line);
 }
 
+/**
+ * Error reporting for tracker
+ *
+ */
 interface ErrorHandler
 {
 	public function halt($message);
 	public function exception(\Exception $e);
 }
 
+interface ConfigurationReader
+{
+	public function map($key);
+}
+
 interface ConfigurationProvider
 {
-	/**
-	 * Elementary configuration items almost for every application
-	 */
-	const CONFIG_LOG_FILE = 'log_file';
-	const CONFIG_NUMWANT_LIMIT = 'numwant_limit';
-	const CONFIG_MAIN_DB_HOST = '';
-	const CONFIG_MAIN_DB_PORT = '';
-	const CONFIG_MAIN_DB_USER = '';
-	const CONFIG_MAIN_DB_PASS = '';
-	const CONFIG_MAIN_DB_NAME = '';
-	
 	public function get($key, $default = NULL);
 	public function set($key, $value);
 }
 
-interface SessionRegisteryProvider
+interface RegistryProvider
 {
 	public function has($key);
 	public function get($key);
@@ -106,7 +108,7 @@ interface SessionRegisteryProvider
 	public function del($key); 
 }
 
-interface PersistentRegisteryProvider
+interface PersistentRegistryProvider
 {
 	public function store($key, $value, $expire = 0);
 	public function fetch($key);
@@ -137,6 +139,62 @@ interface PeerDatabaseProvider
 	public function getSeedersCount($torrentid);
 	
 	public function getLeechersCount($torrentid);
-	
+	/**
+	 * Make a full qualified PrivatePeer persisted
+	 * 
+	 * @param PrivatePeer $peer
+	 */
 	public function persist(PrivatePeer $peer);
+}
+/**
+ * Additional interface for RDBMS providers
+ * Assure helpers can do custom queries or special setup on the connections
+ *
+ */
+interface RDBMSProvider
+{
+	public function getHandle();
+	public function query($sql);
+}
+/**
+ * Handle the variations about initialization, names and custom features 
+ *
+ */
+interface RDBMSReader
+{
+	/**
+	 * Custom operations immediately after connected to DB
+	 * 
+	 * @param RDBMSProvider $db
+	 */
+	public function initialize(RDBMSProvider $db);
+	/**
+	 * Get local table name
+	 * 
+	 * @param string $name
+	 * @return string
+	 */
+	public function table($name = 'peers');
+	/**
+	 * Get local field name
+	 * 
+	 * @param string $name
+	 * @return string
+	 */
+	public function field($name);
+	/**
+	 * Get local fields list for insert
+	 * 
+	 * @param string $table
+	 * @return array
+	 */
+	public function fields($table = 'peers');
+	/**
+	 * Get the callback used to persist the field in RAW SQL 
+	 * 
+	 * @param PrivatePeer $peer
+	 * @return array (field => escaped_string_to_insert_update)
+	 */
+	public function persist(PrivatePeer $peer);
+	
 }
